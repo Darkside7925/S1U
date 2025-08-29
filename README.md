@@ -116,9 +116,9 @@ realtime = true
 
 ## Help
 
-- Documentation: https://s1u.readthedocs.io
-- Issues: https://github.com/yourusername/S1U/issues
-- Discussions: https://github.com/yourusername/S1U/discussions
+- Documentation: 
+- Issues: https://github.com/Darkside7925/S1U/issues
+- Discussions: https://github.com/Darkside7925/S1U/discussions
 
 ## License
 
