@@ -3,6 +3,10 @@
 #include <vector>
 #include <fstream>
 #include <algorithm>
+#include <set>
+#include <unordered_map>
+#include <string>
+#include <iostream>
 
 namespace s1u {
 
@@ -135,7 +139,7 @@ public:
     }
     
     // Ultra-high performance rendering
-    void set_performance_mode(PerformanceMode mode) {
+    void set_performance_mode(VulkanDriver::PerformanceMode mode) {
         performance_mode_ = mode;
         configure_performance_settings();
     }
@@ -149,7 +153,7 @@ public:
     }
     
     // Variable rate shading for extreme performance
-    void configure_variable_rate_shading(VRSMode mode) {
+    void configure_variable_rate_shading(VulkanDriver::VRSMode mode) {
         if (vrs_supported_) {
             vrs_mode_ = mode;
             setup_vrs_pipeline();
@@ -228,7 +232,7 @@ private:
         
         std::vector<const char*> extensions;
         extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-        extensions.push_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME);
+        // extensions.push_back(VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME); // Linux-specific
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         
         std::vector<const char*> layers;
@@ -337,9 +341,9 @@ private:
         
         // Find graphics, compute, and transfer queue families
         std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
-        std::set<u32> unique_queue_families;
+        std::set<uint32_t> unique_queue_families;
         
-        for (u32 i = 0; i < queue_families.size(); i++) {
+        for (uint32_t i = 0; i < queue_families.size(); i++) {
             if (queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 graphics_queue_family_ = i;
                 unique_queue_families.insert(i);

@@ -662,3 +662,4 @@ void QuantumOptimizationEngine::cleanup_vulkan_resources() {
 }
 
 } // namespace s1u
+

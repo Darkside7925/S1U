@@ -743,3 +743,4 @@ void QuantumFieldProcessor::cleanup_vulkan_resources() {
 }
 
 } // namespace s1u
+

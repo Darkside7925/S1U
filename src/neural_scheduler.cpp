@@ -527,3 +527,4 @@ float NeuralScheduler::get_actual_task_duration(int task_id) {
 }
 
 } // namespace s1u
+

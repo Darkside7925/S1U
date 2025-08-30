@@ -9,8 +9,18 @@
 #include <atomic>
 #include <mutex>
 #include <shared_mutex>
+#include <chrono>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <filesystem>
 #include <dlfcn.h>
+#endif
 
 namespace s1u {
 
@@ -310,8 +320,9 @@ public:
 
         // Check if module exists in search paths
         for (const auto& path : driver_search_paths_) {
-            std::filesystem::path module_path = std::filesystem::path(path) / (module_name + ".ko");
-            if (std::filesystem::exists(module_path)) {
+            std::string module_path = path + "/" + module_name + ".ko";
+            std::ifstream file(module_path);
+            if (file.good()) {
                 // Simulate successful loading
                 std::cout << "Loading kernel module: " << module_name << std::endl;
                 return true;
@@ -330,7 +341,30 @@ public:
             return false;
         }
 
-        // Load shared library
+        // Load shared library - cross-platform
+#ifdef _WIN32
+        driver.handle = LoadLibraryA(module_path.c_str());
+        if (!driver.handle) {
+            std::cerr << "Failed to load driver " << driver.name << ": Windows error " << GetLastError() << std::endl;
+            return false;
+        }
+
+        // Get driver initialization function
+        using InitFunc = bool (*)(DriverInfo&);
+        InitFunc init_func = reinterpret_cast<InitFunc>(GetProcAddress(static_cast<HMODULE>(driver.handle), "driver_init"));
+        if (!init_func) {
+            std::cerr << "Driver " << driver.name << " missing driver_init function" << std::endl;
+            FreeLibrary(static_cast<HMODULE>(driver.handle));
+            return false;
+        }
+
+        // Initialize driver
+        if (!init_func(driver)) {
+            std::cerr << "Driver " << driver.name << " initialization failed" << std::endl;
+            FreeLibrary(static_cast<HMODULE>(driver.handle));
+            return false;
+        }
+#else
         driver.handle = dlopen(module_path.c_str(), RTLD_LAZY);
         if (!driver.handle) {
             std::cerr << "Failed to load driver " << driver.name << ": " << dlerror() << std::endl;
@@ -352,6 +386,7 @@ public:
             dlclose(driver.handle);
             return false;
         }
+#endif
 
         driver.is_loaded = true;
         driver.is_active = true;
@@ -362,7 +397,16 @@ public:
 
     void unload_external_driver(DriverInfo& driver) {
         if (driver.handle) {
-            // Get driver cleanup function
+            // Get driver cleanup function - cross-platform
+#ifdef _WIN32
+            using CleanupFunc = void (*)(DriverInfo&);
+            CleanupFunc cleanup_func = reinterpret_cast<CleanupFunc>(GetProcAddress(static_cast<HMODULE>(driver.handle), "driver_cleanup"));
+            if (cleanup_func) {
+                cleanup_func(driver);
+            }
+
+            FreeLibrary(static_cast<HMODULE>(driver.handle));
+#else
             using CleanupFunc = void (*)(DriverInfo&);
             CleanupFunc cleanup_func = reinterpret_cast<CleanupFunc>(dlsym(driver.handle, "driver_cleanup"));
             if (cleanup_func) {
@@ -370,21 +414,24 @@ public:
             }
 
             dlclose(driver.handle);
+#endif
             driver.handle = nullptr;
         }
     }
 
     std::string find_driver_module(const std::string& driver_name) {
         for (const auto& path : driver_search_paths_) {
-            std::filesystem::path module_path = std::filesystem::path(path) / ("lib" + driver_name + ".so");
-            if (std::filesystem::exists(module_path)) {
-                return module_path.string();
+            std::string module_path = path + "/lib" + driver_name + ".so";
+            std::ifstream file(module_path);
+            if (file.good()) {
+                return module_path;
             }
 
             // Also check for .ko files (kernel modules)
-            std::filesystem::path ko_path = std::filesystem::path(path) / (driver_name + ".ko");
-            if (std::filesystem::exists(ko_path)) {
-                return ko_path.string();
+            std::string ko_path = path + "/" + driver_name + ".ko";
+            std::ifstream ko_file(ko_path);
+            if (ko_file.good()) {
+                return ko_path;
             }
         }
         return "";
@@ -649,3 +696,4 @@ void DriverManager::remove_driver_search_path(const std::string& path) {
 }
 
 } // namespace s1u
+

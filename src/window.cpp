@@ -4,21 +4,38 @@
 #include <thread>
 #include <chrono>
 
+#ifdef _WIN32
+#include <malloc.h>
+#define aligned_alloc(alignment, size) _aligned_malloc(size, alignment)
+#define free_aligned(ptr) _aligned_free(ptr)
+#else
+#define free_aligned(ptr) free(ptr)
+#endif
+
 namespace s1u {
 
-WindowBuffer::WindowBuffer(u32 width, u32 height) 
+WindowBuffer::WindowBuffer(u32 width, u32 height)
     : width_(width), height_(height), stride_(width * 4), size_(width * height * 4), damaged_(false) {
     data_ = aligned_alloc(64, size_);
     if (data_) {
         memset(data_, 0, size_);
+#ifdef _WIN32
+        // Windows doesn't have mlock equivalent for user mode
+        // VirtualLock can be used but requires special privileges
+#else
         mlock(data_, size_);
+#endif
     }
 }
 
 WindowBuffer::~WindowBuffer() {
     if (data_) {
+#ifdef _WIN32
+        // No munlock equivalent needed for Windows stub
+#else
         munlock(data_, size_);
-        free(data_);
+#endif
+        free_aligned(data_);
     }
 }
 

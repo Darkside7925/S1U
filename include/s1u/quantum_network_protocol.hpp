@@ -593,3 +593,4 @@ f64 calculate_network_efficiency(const NetworkProtocolStats& stats);
 bool is_quantum_networking_available();
 
 } // namespace S1U
+
