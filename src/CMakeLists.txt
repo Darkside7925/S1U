@@ -7,6 +7,10 @@ set(S1U_SOURCES
     quantum_memory_manager.cpp
     advanced_display_manager.cpp
     quantum_network_protocol.cpp
+    neural_scheduler.cpp
+    holographic_display_system.cpp
+    quantum_optimization_engine.cpp
+    quantum_field_processor.cpp
 )
 
 add_executable(s1u ${S1U_SOURCES})
