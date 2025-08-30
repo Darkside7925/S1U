@@ -8,6 +8,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
 
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
+find_package(Vulkan REQUIRED)
 
 pkg_check_modules(DRM REQUIRED libdrm)
 pkg_check_modules(GBM REQUIRED gbm)
@@ -27,6 +28,7 @@ include_directories(${INPUT_INCLUDE_DIRS})
 include_directories(${UDEV_INCLUDE_DIRS})
 include_directories(${CAIRO_INCLUDE_DIRS})
 include_directories(${PANGO_INCLUDE_DIRS})
+include_directories(${Vulkan_INCLUDE_DIRS})
 
 link_directories(${DRM_LIBRARY_DIRS})
 link_directories(${GBM_LIBRARY_DIRS})

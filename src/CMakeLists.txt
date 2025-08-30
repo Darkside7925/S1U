@@ -1,13 +1,12 @@
 set(S1U_SOURCES
     core.cpp
     window.cpp
-    display.cpp
-    compositor.cpp
-    renderer.cpp
-    input_manager.cpp
-    driver_manager.cpp
-    protocol_server.cpp
     main.cpp
+    realtime_optimizer.cpp
+    extreme_performance_optimizer.cpp
+    quantum_memory_manager.cpp
+    advanced_display_manager.cpp
+    quantum_network_protocol.cpp
 )
 
 add_executable(s1u ${S1U_SOURCES})
@@ -21,10 +20,12 @@ target_link_libraries(s1u
     ${UDEV_LIBRARIES}
     ${CAIRO_LIBRARIES}
     ${PANGO_LIBRARIES}
+    Vulkan::Vulkan
     Threads::Threads
     dl
     m
     rt
+    numa
 )
 
 target_compile_options(s1u PRIVATE

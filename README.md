@@ -1,10 +1,10 @@
 # S1U Display Protocol
 
-A display protocol implementation for Linux systems.
+S1U is a display server that manages windows and graphics on Linux systems.
 
-## Overview
+## What it does
 
-S1U is a display protocol that provides communication between applications and the display server. It handles window management, graphics rendering, and input processing.
+S1U handles window management, graphics rendering, and input processing for desktop applications.
 
 ## Features
 
@@ -24,26 +24,26 @@ S1U is a display protocol that provides communication between applications and t
 - Variable rate shading
 
 ### Networking
-- Zero-copy data transfer
-- RDMA support
-- Network compression
-- Low-latency communication
-- Distributed rendering
+- Fast data transfer
+- Network support
+- Data compression
+- Low latency
+- Remote rendering
 
-### Performance Optimization
+### Performance
 - Real-time scheduling
-- Memory pinning
-- CPU isolation
-- NUMA optimization
-- Interrupt handling
-- Thermal management
+- Memory optimization
+- CPU management
+- System tuning
+- Hardware control
+- Temperature monitoring
 
 ### Security
-- Process sandboxing
+- Process isolation
 - Memory protection
-- Capability-based security
-- Encrypted communication
-- Authentication system
+- Access control
+- Secure communication
+- User authentication
 
 ## System Requirements
 
@@ -88,14 +88,12 @@ resolution = 1920x1080
 refresh_rate = 60
 
 [network]
-protocol = quantum
-compression = neural
-zero_copy = true
+compression = true
+fast_transfer = true
 
-[optimization]
+[performance]
 realtime = true
-cpu_isolation = true
-memory_pinning = true
+optimize = true
 ```
 
 ## Components
