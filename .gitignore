@@ -1,0 +1,38 @@
+# Build folders
+/build/
+/bin/
+
+# Compiled binaries
+*.o
+*.obj
+*.exe
+*.out
+*.dll
+*.so
+*.dylib
+
+# IDE / Editor files
+*.vscode/
+*.idea/
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Log files
+*.log
