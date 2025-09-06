@@ -1,15 +1,18 @@
 #include <iostream>
-#include <thread>
+#include <memory>
 #include <chrono>
+#include <thread>
 #include <atomic>
-#include <vector>
-#include <string>
 #include <fstream>
-#include <sstream>
-#include <dirent.h>
 #include <sys/utsname.h>
-#include <unistd.h>
 #include <sys/sysinfo.h>
+#include <dirent.h>
+#include <unistd.h>
+#include "s1u/display_server.hpp"
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 std::atomic<bool> running = true;
 
@@ -24,18 +27,27 @@ public:
         std::cout << std::endl;
 
         std::cout << "[INIT] Initializing S1U Display Server..." << std::endl;
-        print_system_info();
+        
+        // Create display server configuration
+        s1u::DisplayServerConfig config;
+        config.width = 1920;
+        config.height = 1080;
+        config.refresh_rate = 60;
+        config.vsync = true;
+        config.fullscreen = false;
+        config.borderless = false;
+        config.title = "S1U Display Server";
+        config.theme = "liquid_glass";
+        config.enable_compositor = true;
+        config.enable_quantum_effects = true;
+        config.max_fps = 144;
 
-        // Real driver loading detection
-        std::cout << "[INIT] Detecting and loading drivers..." << std::endl;
-        detect_graphics_drivers();
-        detect_input_drivers();
-
-        // Real hardware detection
-        std::cout << "[INIT] Detecting hardware..." << std::endl;
-        detect_graphics_hardware();
-        detect_display_hardware();
-        detect_input_hardware();
+        // Initialize the real display server
+        display_server_ = std::make_unique<s1u::DisplayServer>();
+        if (!display_server_->initialize(config)) {
+            std::cerr << "[INIT] Failed to initialize display server" << std::endl;
+            return false;
+        }
 
         std::cout << "[INIT] S1U Server initialization completed!" << std::endl;
         std::cout << "[INIT] Ready for extreme performance display server operations" << std::endl;
@@ -238,38 +250,28 @@ private:
 public:
     void run() {
         std::cout << "[RUN] S1U Display Server starting main loop..." << std::endl;
-        std::cout << "[RUN] Target: 540Hz refresh rate with microsecond precision" << std::endl;
+        std::cout << "[RUN] Target: 144Hz refresh rate with vsync" << std::endl;
         std::cout << std::endl;
 
-        int frame_count = 0;
-        auto start_time = std::chrono::high_resolution_clock::now();
+        // Start the display server
+        display_server_->run();
 
-        while (running && frame_count < 1000) {
-            auto frame_start = std::chrono::high_resolution_clock::now();
+        // Load a demo SU1 application
+        std::cout << "[RUN] Loading demo SU1 application..." << std::endl;
+        display_server_->load_su1_application("demo_app");
 
-            // Simulate frame processing
-            process_frame(frame_count);
-
-            auto frame_end = std::chrono::high_resolution_clock::now();
-            auto frame_duration = std::chrono::duration_cast<std::chrono::microseconds>(frame_end - frame_start);
-
-            // Target 540Hz = ~1851μs per frame
-            const int target_frame_time_us = 1851;
-            if (frame_duration.count() < target_frame_time_us) {
-                auto sleep_time = target_frame_time_us - frame_duration.count();
-                std::this_thread::sleep_for(std::chrono::microseconds(sleep_time));
-            }
-
-            frame_count++;
-
-            // Show stats every 100 frames
-            if (frame_count % 100 == 0) {
-                auto current_time = std::chrono::high_resolution_clock::now();
-                auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time);
-                double fps = (frame_count * 1000.0) / elapsed.count();
-                std::cout << "[STATS] Frame: " << frame_count
-                         << " | FPS: " << fps
-                         << " | Frame Time: " << frame_duration.count() << "μs" << std::endl;
+        // Main loop
+        while (running) {
+            // The display server runs in its own thread
+            // We just monitor the status here
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            
+            // Show stats
+            static int stats_counter = 0;
+            if (++stats_counter % 10 == 0) {
+                std::cout << "[STATS] FPS: " << display_server_->get_current_fps()
+                         << " | Frame: " << display_server_->get_frame_count()
+                         << " | Avg Frame Time: " << display_server_->get_average_frame_time() * 1000.0 << "ms" << std::endl;
             }
         }
 
@@ -279,30 +281,25 @@ public:
     void shutdown() {
         std::cout << std::endl;
         std::cout << "[SHUTDOWN] S1U Display Server shutting down..." << std::endl;
-        std::cout << "[SHUTDOWN] Unloading drivers..." << std::endl;
+        
+        if (display_server_) {
+            display_server_->stop();
+            display_server_->shutdown();
+        }
+        
         std::cout << "[SHUTDOWN] S1U Server shutdown complete!" << std::endl;
         std::cout << "==========================================" << std::endl;
     }
 
 private:
-    void process_frame(int frame_number) {
-        // Simulate typical display server operations
-        static int animation_phase = 0;
-        animation_phase = (animation_phase + 1) % 360;
-
-        // In a real implementation, this would handle:
-        // - GPU rendering commands
-        // - Input event processing
-        // - Window composition
-        // - Display output
-    }
+    std::unique_ptr<s1u::DisplayServer> display_server_;
 };
 
 int main(int argc, char* argv[]) {
-    std::cout << "Starting S1U REAL Hardware Display Server..." << std::endl;
-    std::cout << "Built for 540Hz+ refresh rates with microsecond precision" << std::endl;
-    std::cout << "Real hardware detection - no fake stats!" << std::endl;
-    std::cout << "Supports NVIDIA, AMD, Intel GPUs with real driver detection" << std::endl;
+    std::cout << "Starting S1U REAL Display Server..." << std::endl;
+    std::cout << "Built for 144Hz refresh rates with vsync support" << std::endl;
+    std::cout << "Real OpenGL rendering with window management!" << std::endl;
+    std::cout << "Supports SU1 application integration" << std::endl;
     std::cout << std::endl;
 
     S1UServer server;

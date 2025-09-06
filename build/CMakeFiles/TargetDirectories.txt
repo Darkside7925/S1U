@@ -1,5 +1,0 @@
-/mnt/c/Users/ibrah/GitHub/S1U/build/CMakeFiles/edit_cache.dir
-/mnt/c/Users/ibrah/GitHub/S1U/build/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/ibrah/GitHub/S1U/build/src/CMakeFiles/s1u.dir
-/mnt/c/Users/ibrah/GitHub/S1U/build/src/CMakeFiles/edit_cache.dir
-/mnt/c/Users/ibrah/GitHub/S1U/build/src/CMakeFiles/rebuild_cache.dir

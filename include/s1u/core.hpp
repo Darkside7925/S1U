@@ -26,24 +26,24 @@ using f32 = float;
 using f64 = double;
 
 struct Point {
-    i32 x, y;
-    Point(i32 x = 0, i32 y = 0) : x(x), y(y) {}
+    f32 x, y;
+    Point(f32 x = 0.0f, f32 y = 0.0f) : x(x), y(y) {}
 };
 
 struct Size {
-    u32 width, height;
-    Size(u32 w = 0, u32 h = 0) : width(w), height(h) {}
+    f32 width, height;
+    Size(f32 w = 0.0f, f32 h = 0.0f) : width(w), height(h) {}
 };
 
 struct Rect {
-    i32 x, y;
-    u32 width, height;
-    Rect(i32 x = 0, i32 y = 0, u32 w = 0, u32 h = 0) : x(x), y(y), width(w), height(h) {}
+    f32 x, y;
+    f32 width, height;
+    Rect(f32 x = 0.0f, f32 y = 0.0f, f32 w = 0.0f, f32 h = 0.0f) : x(x), y(y), width(w), height(h) {}
 };
 
 struct Color {
-    u8 r, g, b, a;
-    Color(u8 r = 0, u8 g = 0, u8 b = 0, u8 a = 255) : r(r), g(g), b(b), a(a) {}
+    f32 r, g, b, a;
+    Color(f32 r = 1.0f, f32 g = 1.0f, f32 b = 1.0f, f32 a = 1.0f) : r(r), g(g), b(b), a(a) {}
 };
 
 enum class EventType : u32 {
